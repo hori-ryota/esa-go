@@ -11,8 +11,24 @@ func uintToStr(v uint) string {
 	return strconv.FormatUint(uint64(v), 10)
 }
 
-func wrapRes(key string, res interface{}) map[string]interface{} {
+func wrap(key string, res interface{}) map[string]interface{} {
 	return map[string]interface{}{
 		key: res,
 	}
+}
+
+func StrP(v string) *string {
+	return &v
+}
+
+func BoolP(v bool) *bool {
+	return &v
+}
+
+func IntP(v int) *int {
+	return &v
+}
+
+func UintP(v uint) *uint {
+	return &v
 }

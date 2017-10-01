@@ -41,15 +41,21 @@ type Post struct {
 	RevisionNumber  int64     `json:"revision_number"`
 	CreatedBy       Member    `json:"created_by"`
 	UpdatedBy       Member    `json:"updated_by"`
-	Kind            PostKind  `json:"kind"`
+	Kind            PostKind  `json:"kind,omitempty"`
 	URL             string    `json:"url"`
-	CommentsCount   uint      `json:"comments_count"`
-	TasksCount      uint      `json:"tasks_count"`
-	DoneTasksCount  uint      `json:"done_tasks_count"`
-	StargazersCount uint      `json:"stargazers_count"`
-	WatchersCount   uint      `json:"watchers_count"`
-	Star            bool      `json:"star"`
-	Watch           bool      `json:"watch"`
+	CommentsCount   *uint     `json:"comments_count,omitempty"`
+	TasksCount      *uint     `json:"tasks_count,omitempty"`
+	DoneTasksCount  *uint     `json:"done_tasks_count,omitempty"`
+	StargazersCount *uint     `json:"stargazers_count,omitempty"`
+	WatchersCount   *uint     `json:"watchers_count,omitempty"`
+	Star            *bool     `json:"star,omitempty"`
+	Watch           *bool     `json:"watch,omitempty"`
+}
+
+// UpdatedPost is struct for post
+type UpdatedPost struct {
+	Post
+	Overlapped bool `json:"overlapped"`
 }
 
 // ListPostsParamInclude is enum for post param "include"
@@ -84,44 +90,47 @@ const (
 
 // ListPostsParam is param for list posts
 type ListPostsParam struct {
-	Q       string                  `url:"q"`
-	Include []ListPostsParamInclude `url:"include,comma"`
-	Sort    ListPostsParamSort      `url:"sort"`
-	Order   Order                   `url:"order"`
+	Q       string                  `url:"q,omitempty"`
+	Include []ListPostsParamInclude `url:"include,omitempty,comma"`
+	Sort    ListPostsParamSort      `url:"sort,omitempty"`
+	Order   Order                   `url:"order,omitempty"`
 }
 
 // CreatePostParam is param for create post
 type CreatePostParam struct {
-	Name     string   `json:"name"`
-	BodyMD   string   `json:"body_md"`
-	Tags     []string `json:"tags"`
-	Category string   `json:"category"`
-	WIP      bool     `json:"wip"`
-	Message  string   `json:"message"`
-	User     *string  `json:"user"`
+	Name     string    `json:"name"`
+	BodyMD   *string   `json:"body_md,omitempty"`
+	Tags     *[]string `json:"tags,omitempty"`
+	Category *string   `json:"category,omitempty"`
+	WIP      *bool     `json:"wip,omitempty"`
+	Message  *string   `json:"message,omitempty"`
+	User     *string   `json:"user,omitempty"`
+}
+
+// OriginalRevision is subparam for update post
+type OriginalRevision struct {
+	BodyMD string `json:"body_md"`
+	Number uint   `json:"number"`
+	User   string `json:"user"`
 }
 
 // UpdatePostParam is param for update post
 type UpdatePostParam struct {
-	Name             *string   `json:"name"`
-	BodyMD           *string   `json:"body_md"`
-	Tags             *[]string `json:"tags"`
-	Category         *string   `json:"category"`
-	WIP              *bool     `json:"wip"`
-	Message          *string   `json:"message"`
-	CreatedBy        *string   `json:"created_by"`
-	UpdatedBy        *string   `json:"updated_by"`
-	OriginalRevision struct {
-		BodyMD string `json:"body_md"`
-		Number uint   `json:"number"`
-		User   string `json:"user"`
-	} `json:"original_revision"`
+	Name             *string           `json:"name,omitempty"`
+	BodyMD           *string           `json:"body_md,omitempty"`
+	Tags             *[]string         `json:"tags,omitempty"`
+	Category         *string           `json:"category,omitempty"`
+	WIP              *bool             `json:"wip,omitempty"`
+	Message          *string           `json:"message,omitempty"`
+	CreatedBy        *string           `json:"created_by,omitempty"`
+	UpdatedBy        *string           `json:"updated_by,omitempty"`
+	OriginalRevision *OriginalRevision `json:"original_revision,omitempty"`
 }
 
 // ListPosts list posts
-func (c ClientImpl) ListPosts(ctx context.Context, param ListPostsParam, page uint, parPage uint) (*PostsResp, error) {
+func (c ClientImpl) ListPosts(ctx context.Context, param ListPostsParam, page uint, perPage uint) (*PostsResp, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts")
-	pagerQuery := c.pagerQuery(page, parPage)
+	pagerQuery := c.pagerQuery(page, perPage)
 	query, err := queryPkg.Values(param)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create query from param")
@@ -147,20 +156,20 @@ func (c ClientImpl) GetPost(ctx context.Context, number uint) (*Post, error) {
 // CreatePost create post
 func (c ClientImpl) CreatePost(ctx context.Context, param CreatePostParam) (*Post, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts")
+	wrap := wrap("post", param)
 	res := Post{}
-	wrap := wrapRes("post", &res)
-	if err := c.httpPost(ctx, spath, param, wrap); err != nil {
+	if err := c.httpPost(ctx, spath, wrap, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 // UpdatePost update post
-func (c ClientImpl) UpdatePost(ctx context.Context, number uint, param UpdatePostParam) (*Post, error) {
+func (c ClientImpl) UpdatePost(ctx context.Context, number uint, param UpdatePostParam) (*UpdatedPost, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts", uintToStr(number))
-	res := Post{}
-	wrap := wrapRes("post", &res)
-	if err := c.httpPatch(ctx, spath, param, wrap); err != nil {
+	wrap := wrap("post", param)
+	res := UpdatedPost{}
+	if err := c.httpPatch(ctx, spath, wrap, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

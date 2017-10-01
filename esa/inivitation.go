@@ -20,16 +20,21 @@ type Invitation struct {
 	URL       string    `json:"url"`
 }
 
-// InvitationByEmailParam is param for invitaion by email
+// InvitationByEmailParam is param for invitation by email
 type InvitationByEmailParam struct {
 	Member struct {
 		Emails []string `json:"emails"`
 	} `json:"member"`
 }
 
+// InvitationByEmailResp is resp for invitation by email
+type InvitationByEmailResp struct {
+	Invitations []Invitation `json:"invitations"`
+}
+
 // GetInvitationURL get invitationURL
 func (c ClientImpl) GetInvitationURL(ctx context.Context) (*URLResp, error) {
-	spath := path.Join("/v1/teams", c.teamName, "invitaion")
+	spath := path.Join("/v1/teams", c.teamName, "invitation")
 	res := URLResp{}
 	if err := c.httpGet(ctx, spath, nil, &res); err != nil {
 		return nil, err
@@ -39,7 +44,7 @@ func (c ClientImpl) GetInvitationURL(ctx context.Context) (*URLResp, error) {
 
 // RegenerateInvitationURL regenerate invitationURL
 func (c ClientImpl) RegenerateInvitationURL(ctx context.Context) (*URLResp, error) {
-	spath := path.Join("/v1/teams", c.teamName, "invitaion_regenerator")
+	spath := path.Join("/v1/teams", c.teamName, "invitation_regenerator")
 	res := URLResp{}
 	if err := c.httpPost(ctx, spath, nil, &res); err != nil {
 		return nil, err
@@ -48,11 +53,11 @@ func (c ClientImpl) RegenerateInvitationURL(ctx context.Context) (*URLResp, erro
 }
 
 // InviteByEmail invite byEmail
-func (c ClientImpl) InviteByEmail(ctx context.Context, emails ...string) (*InvitationsResp, error) {
-	spath := path.Join("/v1/teams", c.teamName, "invitaions")
+func (c ClientImpl) InviteByEmail(ctx context.Context, emails ...string) (*InvitationByEmailResp, error) {
+	spath := path.Join("/v1/teams", c.teamName, "invitations")
 	param := InvitationByEmailParam{}
 	param.Member.Emails = emails
-	res := InvitationsResp{}
+	res := InvitationByEmailResp{}
 	if err := c.httpPost(ctx, spath, param, &res); err != nil {
 		return nil, err
 	}
@@ -60,9 +65,9 @@ func (c ClientImpl) InviteByEmail(ctx context.Context, emails ...string) (*Invit
 }
 
 // ListInvitations list invitations
-func (c ClientImpl) ListInvitations(ctx context.Context, page uint, parPage uint) (*InvitationsResp, error) {
-	spath := path.Join("/v1/teams", c.teamName, "invitaions")
-	query := c.pagerQuery(page, parPage)
+func (c ClientImpl) ListInvitations(ctx context.Context, page uint, perPage uint) (*InvitationsResp, error) {
+	spath := path.Join("/v1/teams", c.teamName, "invitations")
+	query := c.pagerQuery(page, perPage)
 	res := InvitationsResp{}
 	if err := c.httpGet(ctx, spath, query, &res); err != nil {
 		return nil, err
@@ -72,6 +77,6 @@ func (c ClientImpl) ListInvitations(ctx context.Context, page uint, parPage uint
 
 // DeleteInvitation delete invitation
 func (c ClientImpl) DeleteInvitation(ctx context.Context, code string) error {
-	spath := path.Join("/v1/teams", c.teamName, "invitaions", code)
+	spath := path.Join("/v1/teams", c.teamName, "invitations", code)
 	return c.httpDelete(ctx, spath)
 }

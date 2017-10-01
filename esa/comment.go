@@ -28,19 +28,19 @@ type Comment struct {
 // CreateCommentParam is param for create comment
 type CreateCommentParam struct {
 	BodyMD string  `json:"body_md"`
-	User   *string `json:"user"`
+	User   *string `json:"user,omitempty"`
 }
 
 // UpdateCommentParam is param for update comment
 type UpdateCommentParam struct {
 	BodyMD *string `json:"body_md"`
-	User   *string `json:"user"`
+	User   *string `json:"user,omitempty"`
 }
 
 // ListComments list comments
-func (c ClientImpl) ListComments(ctx context.Context, postNumber uint, page uint, parPage uint) (*CommentsResp, error) {
+func (c ClientImpl) ListComments(ctx context.Context, postNumber uint, page uint, perPage uint) (*CommentsResp, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts", uintToStr(postNumber), "comments")
-	query := c.pagerQuery(page, parPage)
+	query := c.pagerQuery(page, perPage)
 	res := CommentsResp{}
 	if err := c.httpGet(ctx, spath, query, &res); err != nil {
 		return nil, err
@@ -61,8 +61,9 @@ func (c ClientImpl) GetComment(ctx context.Context, id uint) (*Comment, error) {
 // CreateComment create comment
 func (c ClientImpl) CreateComment(ctx context.Context, postNumber uint, param CreateCommentParam) (*Comment, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts", uintToStr(postNumber), "comments")
+	wrap := wrap("comment", param)
 	res := Comment{}
-	if err := c.httpPost(ctx, spath, param, &res); err != nil {
+	if err := c.httpPost(ctx, spath, wrap, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -71,8 +72,9 @@ func (c ClientImpl) CreateComment(ctx context.Context, postNumber uint, param Cr
 // UpdateComment update comment
 func (c ClientImpl) UpdateComment(ctx context.Context, id uint, param UpdateCommentParam) (*Comment, error) {
 	spath := path.Join("/v1/teams", c.teamName, "comments", uintToStr(id))
+	wrap := wrap("comment", param)
 	res := Comment{}
-	if err := c.httpPatch(ctx, spath, param, &res); err != nil {
+	if err := c.httpPatch(ctx, spath, wrap, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil

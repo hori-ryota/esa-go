@@ -44,9 +44,9 @@ type TeamStats struct {
 }
 
 // ListTeams list teams
-func (c ClientImpl) ListTeams(ctx context.Context, page uint, parPage uint) (*TeamsResp, error) {
+func (c ClientImpl) ListTeams(ctx context.Context, page uint, perPage uint) (*TeamsResp, error) {
 	spath := "/v1/teams"
-	query := c.pagerQuery(page, parPage)
+	query := c.pagerQuery(page, perPage)
 	res := TeamsResp{}
 	if err := c.httpGet(ctx, spath, query, &res); err != nil {
 		return nil, err

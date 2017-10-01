@@ -18,33 +18,33 @@ type Client interface {
 	// like url.URL{Scheme: "http", Host: "localhost"}
 	OverwriteBaseURL(u url.URL)
 
-	ListTeams(ctx context.Context, page uint, parPage uint) (*TeamsResp, error)
+	ListTeams(ctx context.Context, page uint, perPage uint) (*TeamsResp, error)
 	GetTeam(ctx context.Context) (*Team, error)
 	GetTeamStats(ctx context.Context) (*TeamStats, error)
 
-	ListMembers(ctx context.Context, page uint, parPage uint) (*MembersResp, error)
+	ListMembers(ctx context.Context, page uint, perPage uint) (*MembersResp, error)
 
-	ListPosts(ctx context.Context, param ListPostsParam, page uint, parPage uint) (*PostsResp, error)
+	ListPosts(ctx context.Context, param ListPostsParam, page uint, perPage uint) (*PostsResp, error)
 	GetPost(ctx context.Context, number uint) (*Post, error)
 	CreatePost(ctx context.Context, param CreatePostParam) (*Post, error)
-	UpdatePost(ctx context.Context, number uint, param UpdatePostParam) (*Post, error)
+	UpdatePost(ctx context.Context, number uint, param UpdatePostParam) (*UpdatedPost, error)
 	DeletePost(ctx context.Context, number uint) error
 
-	ListComments(ctx context.Context, postNumber uint, page uint, parPage uint) (*CommentsResp, error)
+	ListComments(ctx context.Context, postNumber uint, page uint, perPage uint) (*CommentsResp, error)
 	GetComment(ctx context.Context, id uint) (*Comment, error)
 	CreateComment(ctx context.Context, postNumber uint, param CreateCommentParam) (*Comment, error)
 	UpdateComment(ctx context.Context, id uint, param UpdateCommentParam) (*Comment, error)
 	DeleteComment(ctx context.Context, id uint) error
 
-	ListPostStargazers(ctx context.Context, postNumber uint, page uint, parPage uint) (*StargazersResp, error)
+	ListPostStargazers(ctx context.Context, postNumber uint, page uint, perPage uint) (*StargazersResp, error)
 	StarPost(ctx context.Context, postNumber uint, param StarParam) error
 	UnstarPost(ctx context.Context, postNumber uint) error
 
-	ListCommentStargazers(ctx context.Context, commentID uint, page uint, parPage uint) (*StargazersResp, error)
+	ListCommentStargazers(ctx context.Context, commentID uint, page uint, perPage uint) (*StargazersResp, error)
 	StarComment(ctx context.Context, commentID uint, param StarParam) error
 	UnstarComment(ctx context.Context, commentID uint) error
 
-	ListPostWatchers(ctx context.Context, postNumber uint, page uint, parPage uint) (*WatchersResp, error)
+	ListPostWatchers(ctx context.Context, postNumber uint, page uint, perPage uint) (*WatchersResp, error)
 	WatchPost(ctx context.Context, postNumber uint) error
 	UnwatchPost(ctx context.Context, postNumber uint) error
 
@@ -52,11 +52,11 @@ type Client interface {
 
 	GetInvitationURL(ctx context.Context) (*URLResp, error)
 	RegenerateInvitationURL(ctx context.Context) (*URLResp, error)
-	InviteByEmail(ctx context.Context, emails ...string) (*InvitationsResp, error)
-	ListInvitations(ctx context.Context, page uint, parPage uint) (*InvitationsResp, error)
+	InviteByEmail(ctx context.Context, emails ...string) (*InvitationByEmailResp, error)
+	ListInvitations(ctx context.Context, page uint, perPage uint) (*InvitationsResp, error)
 	DeleteInvitation(ctx context.Context, code string) error
 
-	ListEmojis(ctx context.Context, param ListEmojisParam, page uint, parPage uint) (*EmojisResp, error)
+	ListEmojis(ctx context.Context, param ListEmojisParam, page uint, perPage uint) (*EmojisResp, error)
 	CreateEmoji(ctx context.Context, param CreateEmojiParam) (*Emoji, error)
 	DeleteEmoji(ctx context.Context, code string) error
 

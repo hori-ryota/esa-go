@@ -19,9 +19,9 @@ type Watcher struct {
 }
 
 // ListPostWatchers list postWatchers
-func (c ClientImpl) ListPostWatchers(ctx context.Context, postNumber uint, page uint, parPage uint) (*WatchersResp, error) {
+func (c ClientImpl) ListPostWatchers(ctx context.Context, postNumber uint, page uint, perPage uint) (*WatchersResp, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts", uintToStr(postNumber), "watchers")
-	query := c.pagerQuery(page, parPage)
+	query := c.pagerQuery(page, perPage)
 	res := WatchersResp{}
 	if err := c.httpGet(ctx, spath, query, &res); err != nil {
 		return nil, err

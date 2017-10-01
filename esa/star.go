@@ -25,9 +25,9 @@ type StarParam struct {
 }
 
 // ListPostStargazers list postStargazers
-func (c ClientImpl) ListPostStargazers(ctx context.Context, postNumber uint, page uint, parPage uint) (*StargazersResp, error) {
+func (c ClientImpl) ListPostStargazers(ctx context.Context, postNumber uint, page uint, perPage uint) (*StargazersResp, error) {
 	spath := path.Join("/v1/teams", c.teamName, "posts", uintToStr(postNumber), "stargazers")
-	query := c.pagerQuery(page, parPage)
+	query := c.pagerQuery(page, perPage)
 	res := StargazersResp{}
 	if err := c.httpGet(ctx, spath, query, &res); err != nil {
 		return nil, err
@@ -48,9 +48,9 @@ func (c ClientImpl) UnstarPost(ctx context.Context, postNumber uint) error {
 }
 
 // ListCommentStargazers list commentStargazers
-func (c ClientImpl) ListCommentStargazers(ctx context.Context, commentID uint, page uint, parPage uint) (*StargazersResp, error) {
+func (c ClientImpl) ListCommentStargazers(ctx context.Context, commentID uint, page uint, perPage uint) (*StargazersResp, error) {
 	spath := path.Join("/v1/teams", c.teamName, "comments", uintToStr(commentID), "stargazers")
-	query := c.pagerQuery(page, parPage)
+	query := c.pagerQuery(page, perPage)
 	res := StargazersResp{}
 	if err := c.httpGet(ctx, spath, query, &res); err != nil {
 		return nil, err

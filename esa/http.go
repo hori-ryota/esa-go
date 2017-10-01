@@ -38,10 +38,10 @@ func mergeQuery(values ...url.Values) url.Values {
 	return merged
 }
 
-func (c ClientImpl) pagerQuery(page uint, parPage uint) url.Values {
+func (c ClientImpl) pagerQuery(page uint, perPage uint) url.Values {
 	v := url.Values{}
 	v.Set("page", strconv.FormatUint(uint64(page), 10))
-	v.Set("par_page", strconv.FormatUint(uint64(parPage), 10))
+	v.Set("per_page", strconv.FormatUint(uint64(perPage), 10))
 	return v
 }
 
@@ -154,5 +154,5 @@ func (c ClientImpl) httpWithoutParam(ctx context.Context, method string, spath s
 }
 
 func (c ClientImpl) httpDelete(ctx context.Context, spath string) error {
-	return c.httpWithoutParam(ctx, http.MethodPatch, spath, nil)
+	return c.httpWithoutParam(ctx, http.MethodDelete, spath, nil)
 }
