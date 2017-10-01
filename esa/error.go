@@ -18,3 +18,7 @@ func (e Error) Error() string {
 		e.Message,
 	)
 }
+
+func (e Error) HTTPStatusCode() int {
+	return e.StatusCode
+}
